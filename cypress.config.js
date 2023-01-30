@@ -7,7 +7,7 @@ module.exports = defineConfig(
     e2e:
     {
       specPattern: '**/*.feature',
-      baseUrl: 'http://localhost:5503',
+      baseUrl: 'http://localhost:3456',
       video: false,
       supportFile: false,
       screenshotOnRunFailure: false,

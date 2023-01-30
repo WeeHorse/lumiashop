@@ -4,6 +4,8 @@ server.use(express.json())
 const port = 3456;
 const host = `http://localhost:${port}`
 
+server.use('/', express.static('www'))
+
 // start
 server.listen(port, () => {
   console.log(host)
@@ -43,4 +45,4 @@ server.delete("/examples/:nr", async (req, res) => {
     res.json({listLength: list.length})
 })
 
-setTimeout(process.exit, 2000)
+setTimeout(process.exit, 15000)

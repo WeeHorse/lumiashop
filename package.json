@@ -7,7 +7,8 @@
     "test-ui": "cypress open --browser chrome",
     "test-cl": "cypress run --browser chrome",
     "start": "node server.js",
-    "test-api": "concurrently -s last \"npm run start\" \"newman run specs/api/examples.postman_collection.json\"" 
+    "test-api": "concurrently -s last \"npm run start\" \"newman run specs/api/examples.postman_collection.json\"",
+    "test-cypress": "concurrently -s last \"npm run start\" \"npm run test-cl\""
   },
   "author": "",
   "license": "ISC",
