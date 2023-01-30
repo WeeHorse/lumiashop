@@ -6,14 +6,17 @@
   "scripts": {
     "test-ui": "cypress open --browser chrome",
     "test-cl": "cypress run --browser chrome",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test-api": "concurrently -s last \"npm run start\" \"newman run specs/api/examples.postman_collection.json\"" 
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "12.2",
     "@cypress/webpack-preprocessor": "5.12",
-    "cypress": "10.7"
+    "concurrently": "^7.6.0",
+    "cypress": "10.7",
+    "newman": "^5.3.2"
   },
   "cypress-cucumber-preprocessor": {
     "json": {
