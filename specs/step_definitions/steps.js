@@ -23,4 +23,6 @@ Then('I see articles with names containing {string}', (str) => {
     cy.get('.product h2:visible').each(($h2)=>{
         cy.wrap($h2).should('contain.text', str)
     })
+
+    cy.request('http://localhost:3456/done')
 });
