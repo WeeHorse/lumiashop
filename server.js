@@ -45,3 +45,7 @@ server.delete("/examples/:nr", async (req, res) => {
     res.json({listLength: list.length})
 })
 
+server.get('/done', async (req, res) => {
+    res.json({done:"Shutting down in 2 secs"})
+    setTimeout(process.exit, 2000)
+})
