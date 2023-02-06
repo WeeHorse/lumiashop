@@ -1,4 +1,4 @@
-name: Experiment
+name: Jobs in Sequence
 on: [push]
 
 jobs:
