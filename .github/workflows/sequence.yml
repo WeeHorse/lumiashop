@@ -1,48 +1,77 @@
-name: Jobs in Sequence
+name: Deploy on testing_example
 on: 
   push:
-    branches: [ develop ]
+    branches: [ testing_example ]
   pull_request:
-    branches: [ develop ]
+    branches: [ testing_example ]
 
 jobs:
-  job1:
-    name: Job 1
+  api_test:
+    name: Newman API-testing
+
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Sleep and Run
-      run: |
-        echo "Sleeping for 10"
-        sleep 10
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-  job2:
-    name: Job 2
-    needs: job1
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm i
+    - run: npm run test-api
+
+  cypress:
+    name: Cypress UI-testing
+    needs: api_test
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Dependant is Running
-      run: |
-        echo "Completed job 2, but triggering failure"
-        exit 1
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-  job3:
-    name: Job 3
-    needs: job2
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm i
+    - run: npm run test-cypress
+
+  deploy:
+    name: Deploy dev to server
+    needs: cypress
     runs-on: ubuntu-latest
-
     steps:
-    - name: Will never run
-      run: |
-        echo "If you can read this, the sequence failed. This can never happen. This text will never print."
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/dev.key
+          chmod 600 ~/.ssh/dev.key
+          cat >>~/.ssh/config <<END
+          Host dev
+            HostName $SSH_HOST
+            User $SSH_USER
+            Port $SSH_PORT
+            IdentityFile ~/.ssh/dev.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}          
 
-  job4:
-    name: Job 4
-    runs-on: ubuntu-latest
+      - name: Deploy from dev (Important read how to link npm for sudoers https://stackoverflow.com/questions/62863080/github-actions-err-bash-line-3-npm-command-not-found )
+        run: ssh dev 'cd /var/www/lumiashop && git fetch && git reset --hard origin/develop && npm install'
 
-    steps:
-    - name: Independant is Running
-      run: |
-        echo "Completed job 4, triggering success"
-        exit 0
+      - name: Restart app (Important read how to link pm2 for sudoers https://stackoverflow.com/questions/62863080/github-actions-err-bash-line-3-npm-command-not-found )
+        run: ssh dev 'pm2 restart lumia'    
