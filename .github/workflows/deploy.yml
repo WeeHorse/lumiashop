@@ -29,7 +29,7 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}          
 
       - name: Deploy from dev (Important read how to link npm for sudoers https://stackoverflow.com/questions/62863080/github-actions-err-bash-line-3-npm-command-not-found )
-        run: ssh dev 'cd /path/to/your/dev/deployment/directory && git fetch && git reset --hard origin/dev && npm install'
+        run: ssh dev 'cd /var/www/lumiashop && git fetch && git reset --hard origin/develop && npm install'
 
       - name: Restart app (Important read how to link pm2 for sudoers https://stackoverflow.com/questions/62863080/github-actions-err-bash-line-3-npm-command-not-found )
-        run: ssh dev 'pm2 restart dev'        
+        run: ssh dev 'pm2 restart lumia'        
