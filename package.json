@@ -5,9 +5,10 @@
   "main": "script.js",
   "scripts": {
     "test-ui": "cypress open --browser chrome",
-    "test-cl": "concurrently \"npm run start\" \"cypress run --browser chrome\"",
+    "test-cl": "cypress run --browser chrome",
     "start": "node server.js",
-    "test-api": "concurrently \"npm run start\" \"newman run specs/api/examples.postman_collection.json\"" 
+    "test-api": "concurrently \"npm run start\" \"newman run specs/api/examples.postman_collection.json\"",
+    "test-cypress": "concurrently \"npm run start\" \"npm run test-cl\""
   },
   "author": "",
   "license": "ISC",
